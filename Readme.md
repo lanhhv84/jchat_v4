@@ -4,6 +4,13 @@ You can checkout the live version of the application at https://spring-ws-chat.h
 
 ![App Screenshot](screenshot.png)
 
+## TODO
+- [ ] Login, Sign up
+- [ ] Room chat
+- [ ] Send file
+- [ ] Encrypt message
+- [ ] Encrypt file 
+
 ## Requirements
 
 1. Java - 1.8.x
