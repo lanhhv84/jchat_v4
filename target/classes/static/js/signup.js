@@ -26,13 +26,16 @@ document.querySelector('#signup-form').addEventListener('submit', function(e) {
         var response = event.explicitOriginalTarget.response;
         var value = JSON.parse(response)["value"];
         var notification = document.querySelector("#signup-notification");
+        var notification2 = document.querySelector("#signup-notification2");
         console.log(typeof(value));
         console.log(value);
         if (value === true) {
             notification.innerHTML = "Signing up success. Login?";
+            notification2.innerHTML = "";
         }
         else {
             notification.innerHTML = "Username already existed.";
+            notification2.innerHTML = "Alreadly have an account. Sign up now?";
         }
 
 
