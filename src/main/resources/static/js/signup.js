@@ -35,7 +35,7 @@ document.querySelector('#signup-form').addEventListener('submit', function(e) {
         }
         else {
             notification.innerHTML = "Username already existed.";
-            notification2.innerHTML = "Alreadly have an account. Sign up now?";
+            notification2.innerHTML = "Already have an account. Sign up now?";
         }
 
 

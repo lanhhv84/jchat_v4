@@ -17,7 +17,11 @@ var colors = [
 ];
 
 function connect(event) {
-    username = document.querySelector('#name').value.trim();
+    username = localStorage.getItem("username");
+    if (username === null) {
+        window.location.replace("/login.html");
+    }
+    console.log(username);
 
     if(username) {
         usernamePage.classList.add('hidden');
@@ -28,10 +32,10 @@ function connect(event) {
 
         stompClient.connect({}, onConnected, onError);
     }
-    event.preventDefault();
+    // event.preventDefault();
 }
 
-// TODO: Separate to multiple topic
+
 function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
@@ -119,3 +123,5 @@ function getAvatarColor(messageSender) {
 
 usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)
+
+connect(null);
