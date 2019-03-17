@@ -30,7 +30,7 @@ document.querySelector('#login-form').addEventListener('submit', function(e) {
         console.log(typeof(value));
         console.log(value);
         if (value === true) {
-            localStorage.setItem("username", retrieved["username"]);
+            sessionStorage.setItem("username", retrieved["username"]);
             window.location.replace("/index.html");
         }
         else {

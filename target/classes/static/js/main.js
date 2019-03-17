@@ -17,7 +17,7 @@ var colors = [
 ];
 
 function connect(event) {
-    username = localStorage.getItem("username");
+    username = sessionStorage.getItem("username");
     if (username === null) {
         window.location.replace("/login.html");
     }
@@ -35,7 +35,7 @@ function connect(event) {
     // event.preventDefault();
 }
 
-// TODO: Separate to multiple topic
+
 function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);

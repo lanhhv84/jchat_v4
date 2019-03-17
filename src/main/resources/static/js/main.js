@@ -17,7 +17,7 @@ var colors = [
 ];
 
 function connect(event) {
-    username = localStorage.getItem("username");
+    username = sessionStorage.getItem("username");
     if (username === null) {
         window.location.replace("/login.html");
     }
