@@ -23,7 +23,12 @@ var colors = [
 ];
 
 function connect(event) {
-    username = nameInput.val().trim();
+    username = sessionStorage.getItem("username");
+    if (username === null) {
+        if (username === null) {
+            window.location.replace("/login.html");
+        }
+    }
     Cookies.set('name', username);
     if (username) {
         usernamePage.classList.add('hidden');
@@ -154,6 +159,15 @@ var singleFileUploadInput = document.querySelector('#singleFileUploadInput');
 var singleFileUploadError = document.querySelector('#singleFileUploadError');
 var singleFileUploadSuccess = document.querySelector('#singleFileUploadSuccess');
 
+function checkLogin() {
+    username = sessionStorage.getItem("username");
+    if (username === null) {
+        if (username === null) {
+            window.location.replace("/login.html");
+        }
+    }
+}
+
 function uploadSingleFile(file) {
     var formData = new FormData();
     formData.append("file", file);
@@ -197,3 +211,6 @@ singleUploadForm.addEventListener('submit', function(event){
     uploadSingleFile(files[0]);
     event.preventDefault();
 }, true);
+
+
+checkLogin();
