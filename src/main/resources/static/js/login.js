@@ -9,42 +9,24 @@ document.querySelector('#login-form').addEventListener('submit', function(e) {
         obj = data.next();
     } // parse FormData into simple Object
 
-    console.log(obj);
 
-    //at this point might occur some custom validation based on retrieved Object
+    var request = $.ajax({
+        url: '/user/login',
+        type: "GET",
+        data: {username: retrieved["username"], password: retrieved["password"]},
 
-    var XHR = new XMLHttpRequest();
-    var urlEncodedData = "";
-    var urlEncodedDataPairs = [];
+    });
 
-    for(var name in retrieved) {
-        urlEncodedDataPairs.push(encodeURIComponent(name) + '=' + encodeURIComponent(retrieved[name]));
-    }
-    urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+'); // parse object into urlEncoded String
+    var notification = document.querySelector("#login-notification");
 
-    XHR.addEventListener('load', function(event) {
-        var response = event.explicitOriginalTarget.response;
-        console.log(response);
-        var value = JSON.parse(response)["value"];
-        var notification = document.querySelector("#login-notification");
-        console.log(typeof(value));
-        console.log(value);
-        if (value === true) {
+    request.done(function(msg) {
+        if (msg["value"] === true) {
             sessionStorage.setItem("username", retrieved["username"]);
             window.location.replace("/index.html");
         }
         else {
             notification.innerHTML = "Incorrect identification";
         }
-
-
     });
-    XHR.addEventListener('error', function(event) {
-        console.log('Oops! Something goes wrong.');
-    });
-
-    XHR.open('POST', '/user/login');
-    XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    XHR.send(urlEncodedData); // send the form
 
 });

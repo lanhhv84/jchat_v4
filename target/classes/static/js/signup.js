@@ -9,27 +9,22 @@ document.querySelector('#signup-form').addEventListener('submit', function(e) {
         obj = data.next();
     } // parse FormData into simple Object
 
-    console.log(obj);
+    var request = $.ajax({
+        url: '/user/add',
+        type: "GET",
+        data: {username: retrieved["username"], password: retrieved["password"]},
 
-    //at this point might occur some custom validation based on retrieved Object
+    });
 
-    var XHR = new XMLHttpRequest();
-    var urlEncodedData = "";
-    var urlEncodedDataPairs = [];
 
-    for(var name in retrieved) {
-        urlEncodedDataPairs.push(encodeURIComponent(name) + '=' + encodeURIComponent(retrieved[name]));
-    }
-    urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+'); // parse object into urlEncoded String
 
-    XHR.addEventListener('load', function(event) {
-        var response = event.explicitOriginalTarget.response;
-        var value = JSON.parse(response)["value"];
-        var notification = document.querySelector("#signup-notification");
-        var notification2 = document.querySelector("#signup-notification2");
-        console.log(typeof(value));
-        console.log(value);
-        if (value === true) {
+    var notification = document.querySelector("#signup-notification");
+    var notification2 = document.querySelector("#signup-notification2");
+
+
+
+    request.done(function(msg) {
+        if (msg["value"] === true) {
             notification.innerHTML = "Signing up success. Login?";
             notification2.innerHTML = "";
         }
@@ -37,15 +32,12 @@ document.querySelector('#signup-form').addEventListener('submit', function(e) {
             notification.innerHTML = "Username already existed.";
             notification2.innerHTML = "Already have an account. Sign up now?";
         }
-
-
-    });
-    XHR.addEventListener('error', function(event) {
-        console.log('Oops! Something goes wrong.');
     });
 
-    XHR.open('POST', '/user/add');
-    XHR.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    XHR.send(urlEncodedData); // send the form
+    console.log(obj);
+
+    //at this point might occur some custom validation based on retrieved Object
+
+
 
 });
