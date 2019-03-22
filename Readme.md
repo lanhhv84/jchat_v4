@@ -6,8 +6,9 @@ You can checkout the live version of the application at https://spring-ws-chat.h
 
 ## TODO
 - [x] Login, Sign up
-- [ ] Room chat
-- [ ] Send file
+- [x] Room chat
+- [x] Send file
+- [ ] Key server
 - [ ] Encrypt message
 - [ ] Encrypt file 
 
