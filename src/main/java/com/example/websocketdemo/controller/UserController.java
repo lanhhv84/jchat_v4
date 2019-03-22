@@ -2,6 +2,7 @@ package com.example.websocketdemo.controller;
 
 import com.example.websocketdemo.crypt.CryptoException;
 import com.example.websocketdemo.crypt.CryptoUtils;
+import com.example.websocketdemo.crypt.Hasher;
 import com.example.websocketdemo.model.User;
 import com.example.websocketdemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    Hasher hasher = new Hasher();
+
     public ResponseEntity<?> ok(boolean value) {
         HashMap<String, Boolean> values = new HashMap<>();
         values.put("value", value);
@@ -34,7 +37,7 @@ public class UserController {
             return ok(false);
         }
         else {
-            User user = new User(username, password);
+            User user = new User(username, hasher.hash(password));
             userService.add(user);
             return ok(true);
         }
@@ -44,13 +47,13 @@ public class UserController {
     public ResponseEntity<?> login(@RequestParam("username") String username,
                                    @RequestParam("password") String password) {
 
-        if (userService.login(username, password)) {
+        if (userService.login(username, hasher.hash(password))) {
+
             CryptoUtils cryptoUtils = new CryptoUtils();
             // Create new key
             try {
                 cryptoUtils.keyGenerator();
                 PublicKey publicKey =  cryptoUtils.getPub();
-                publicKey.
             }
             catch (CryptoException ex) {
 
