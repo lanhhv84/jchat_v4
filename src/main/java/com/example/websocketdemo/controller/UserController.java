@@ -1,5 +1,7 @@
 package com.example.websocketdemo.controller;
 
+import com.example.websocketdemo.crypt.CryptoException;
+import com.example.websocketdemo.crypt.CryptoUtils;
 import com.example.websocketdemo.model.User;
 import com.example.websocketdemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.PublicKey;
 import java.util.HashMap;
 
 @Controller
@@ -42,6 +45,17 @@ public class UserController {
                                    @RequestParam("password") String password) {
 
         if (userService.login(username, password)) {
+            CryptoUtils cryptoUtils = new CryptoUtils();
+            // Create new key
+            try {
+                cryptoUtils.keyGenerator();
+                PublicKey publicKey =  cryptoUtils.getPub();
+                publicKey.
+            }
+            catch (CryptoException ex) {
+
+            }
+
             return ok(true);
         }
         else {
