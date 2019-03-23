@@ -29,10 +29,10 @@ public class FileController {
     private FileStorageService fileStorageService;
 
     @PostMapping("/uploadFile")
-    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
+    public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("option") String option) {
         String fileName;
         try {
-            fileName = fileStorageService.storeFile(file);
+            fileName = fileStorageService.storeFile(file, option);
             String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                     .path("/downloadFile/")
                     .path(fileName)

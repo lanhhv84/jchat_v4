@@ -51,41 +51,44 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file) throws CryptoException {
+    public String storeFile(MultipartFile file, String option) throws CryptoException {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {
-            // Check if the file's name contains invalid characters
             if (fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
-
-            // Copy file to the target location (Replacing existing file with
-            // the same name)
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            // byte[] input = new byte[(int) file.getSize()];
-            // System.out.println(file.getInputStream());
+            if (option.equals("AES")){
+                byte[] inputBytes = file.getBytes();
+                String key = RandomStringUtils.randomAscii(16);
+                Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
+                Cipher cipher = Cipher.getInstance("AES");
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+                byte[] outputBytes = cipher.doFinal(inputBytes);
+                byte[] result = ArrayUtils.addAll(outputBytes, key.getBytes());
+                File outputFile = new File(fileName);
+                FileOutputStream outputStream = new FileOutputStream(outputFile);
+                outputStream.write(result);
+                Files.copy(new FileInputStream(outputFile), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+                outputStream.close();
+            } else if (option.equals("RSA")){
 
-            byte[] inputBytes = file.getBytes();
-
-            String key = RandomStringUtils.randomAscii(16);
-
-            Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
-            Cipher cipher = Cipher.getInstance("AES");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-
-            byte[] outputBytes = cipher.doFinal(inputBytes);
-            byte[] result = ArrayUtils.addAll(outputBytes, key.getBytes());
-
-            File outputFile = new File(fileName);
-            FileOutputStream outputStream = new FileOutputStream(outputFile);
-            outputStream.write(result);
-
-            Files.copy(new FileInputStream(outputFile), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-
-            outputStream.close();
-
+            } else if (option.equals("BlowFish")){
+                byte[] inputBytes = file.getBytes();
+                String key = RandomStringUtils.randomAscii(16);
+                Key secretKey = new SecretKeySpec(key.getBytes(), "Blowfish");
+                Cipher cipher = Cipher.getInstance("Blowfish");
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+                byte[] outputBytes = cipher.doFinal(inputBytes);
+                byte[] result = ArrayUtils.addAll(outputBytes, key.getBytes());
+                File outputFile = new File(fileName);
+                FileOutputStream outputStream = new FileOutputStream(outputFile);
+                outputStream.write(result);
+                Files.copy(new FileInputStream(outputFile), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+                outputStream.close();
+            }
             return fileName;
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);

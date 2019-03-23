@@ -52,6 +52,11 @@
         <form id="singleUploadForm" name="singleUploadForm">
             <input id="singleFileUploadInput" type="file" name="file"
                    class="file-input" required />
+            <select name="option" id="option">
+                <option value="AES">AES</option>
+                <option value="RSA">RSA</option>
+                <option value="BlowFish">BlowFish</option>
+            </select>
             <button type="submit" class="primary submit-btn">File</button>
         </form>
         <div class="upload-response">
@@ -59,7 +64,6 @@
             <div id="singleFileUploadSuccess"></div>
         </div>
     </div>
-    zz
 </div>
 
 <script
