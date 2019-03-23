@@ -1,5 +1,6 @@
 package com.example.websocketdemo.controller;
 
+import com.example.websocketdemo.crypt.CryptoException;
 import com.example.websocketdemo.payload.UploadFileResponse;
 import com.example.websocketdemo.service.FileStorageService;
 import org.slf4j.Logger;
@@ -29,15 +30,23 @@ public class FileController {
 
     @PostMapping("/uploadFile")
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
-        String fileName = fileStorageService.storeFile(file);
+        String fileName;
+        try {
+            fileName = fileStorageService.storeFile(file);
+            String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/downloadFile/")
+                    .path(fileName)
+                    .toUriString();
 
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
-                .path(fileName)
-                .toUriString();
+            return new UploadFileResponse(fileName, fileDownloadUri,
+                    file.getContentType(), file.getSize());
 
-        return new UploadFileResponse(fileName, fileDownloadUri,
-                file.getContentType(), file.getSize());
+        } catch (CryptoException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return new UploadFileResponse("","","", file.getSize());
     }
 
     @PostMapping("/uploadMultipleFiles")

@@ -1,23 +1,38 @@
 package com.example.websocketdemo.service;
 
+import com.example.websocketdemo.crypt.CryptoException;
 import com.example.websocketdemo.exception.FileStorageException;
 import com.example.websocketdemo.exception.MyFileNotFoundException;
 import com.example.websocketdemo.property.FileStorageProperties;
 
 import net.bytebuddy.asm.Advice.This;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 
 @Service
 public class FileStorageService {
@@ -36,25 +51,49 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file) {
+    public String storeFile(MultipartFile file) throws CryptoException {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
         try {
             // Check if the file's name contains invalid characters
-            if(fileName.contains("..")) {
+            if (fileName.contains("..")) {
                 throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
             }
 
-            // Copy file to the target location (Replacing existing file with the same name)
+            // Copy file to the target location (Replacing existing file with
+            // the same name)
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            System.out.println(file.getInputStream());
-            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            // byte[] input = new byte[(int) file.getSize()];
+            // System.out.println(file.getInputStream());
+
+            byte[] inputBytes = file.getBytes();
+
+            String key = RandomStringUtils.randomAscii(16);
+
+            Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
+            Cipher cipher = Cipher.getInstance("AES");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+            byte[] outputBytes = cipher.doFinal(inputBytes);
+            byte[] result = ArrayUtils.addAll(outputBytes, key.getBytes());
+
+            File outputFile = new File(fileName);
+            FileOutputStream outputStream = new FileOutputStream(outputFile);
+            outputStream.write(result);
+
+            Files.copy(new FileInputStream(outputFile), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+            outputStream.close();
 
             return fileName;
         } catch (IOException ex) {
             throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException
+                | IllegalBlockSizeException ex) {
+                throw new CryptoException("Error encrypting/decrypting file", ex);
         }
+
     }
 
     public Resource loadFileAsResource(String fileName) {
