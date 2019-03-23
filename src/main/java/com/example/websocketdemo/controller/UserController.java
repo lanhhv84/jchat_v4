@@ -7,6 +7,7 @@ import com.example.websocketdemo.model.Key;
 import com.example.websocketdemo.model.User;
 import com.example.websocketdemo.service.KeyService;
 import com.example.websocketdemo.service.UserService;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -59,12 +60,14 @@ public class UserController {
             try {
                 cryptoUtils.keyGenerator();
                 PublicKey publicKey =  cryptoUtils.getPub();
-                String key = CryptoUtils.getKey(publicKey.getEncoded());
+                String key = Hex.encodeHexString(publicKey.getEncoded());
                 User user = userService.findOne(username);
-                Key keyModel = new Key(key, true, user);
-                keyModel.setPublic(true);
-                System.out.println(CryptoUtils.getKey(cryptoUtils.getPvt().getEncoded()).length());
-                Key privateKeyModel = new Key(CryptoUtils.getKey(cryptoUtils.getPvt().getEncoded()), true, user);
+                Key keyModel = new Key(key, true, true, user);
+                Key privateKeyModel =
+                        new Key(Hex.encodeHexString(cryptoUtils.getPvt().getEncoded()),
+                                true,
+                                false,
+                                user);
                 keyService.add(keyModel);
                 keyService.add(privateKeyModel);
 

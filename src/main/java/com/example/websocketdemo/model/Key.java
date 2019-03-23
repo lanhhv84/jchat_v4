@@ -13,7 +13,7 @@ public class Key {
     @Column(name = "key_id")
     private int id;
 
-    @Column(name = "key_value")
+    @Column(name = "key_value", length = 3071)
     private String key;
 
     @Column(name = "asym")
@@ -25,10 +25,33 @@ public class Key {
     @Column(name = "expired_time")
     private Time expiredTime;
 
+    @Column(name = "is_public")
+    private boolean isPublic;
+
     @ManyToOne(fetch = FetchType.EAGER, targetEntity = User.class)
     @JoinColumn(name = "owner_id")
     private User owner;
 
+
+    public Key(String key, boolean isAsym, Time creationTime, Time expiredTime, boolean isPublic, User owner) {
+        this.key = key;
+        this.isAsym = isAsym;
+        this.creationTime = creationTime;
+        this.expiredTime = expiredTime;
+        this.isPublic = isPublic;
+        this.owner = owner;
+    }
+
+    public Key(String key, boolean isAsym, boolean isPublic, User owner) {
+        this.key = key;
+        this.isAsym = isAsym;
+        this.isPublic = isPublic;
+        this.owner = owner;
+    }
+
+    public Key() {
+        this("", true, true, null);
+    }
 
     public int getId() {
         return id;
@@ -76,5 +99,13 @@ public class Key {
 
     public void setOwner(User owner) {
         this.owner = owner;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
     }
 }
