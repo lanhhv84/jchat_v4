@@ -171,7 +171,8 @@ function checkLogin() {
 function uploadSingleFile(file, option) {
     var formData = new FormData();
     formData.append("file", file);
-    formData.append("option", option )
+    formData.append("option", option);
+    formData.append("owner", sessionStorage.getItem("username"));
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/uploadFile");
@@ -183,7 +184,7 @@ function uploadSingleFile(file, option) {
             singleFileUploadError.style.display = "none";
             singleFileUploadSuccess.innerHTML = "<p>File Uploaded Successfully.</p>";
             singleFileUploadSuccess.style.display = "block";
-            sendMessage = "File : <a href='" + response.fileDownloadUri + "' target='_blank'>" + response.fileName + "</a><br>Filetype :"+response.fileType+ "<br>Size :"+response.size;
+            sendMessage = "File : <a href='" + response.download + "' target='_blank'>" + response.old + "</a><br>Filetype :"+response.type+ "<br>Size :"+response.size;
 
             if (stompClient) {
                 var chatMessage = {

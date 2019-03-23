@@ -12,6 +12,6 @@ public interface UserDB extends JpaRepository<User, Integer> {
     @Query(value = "SELECT COUNT(*) FROM user_data WHERE u_username=?1", nativeQuery = true)
     int existsUserByUsername(String username);
 
-    @Query(value = "SELECT * FROM user_data WHERE u_username=?1")
+    @Query(value = "SELECT * FROM user_data WHERE u_username=?1", nativeQuery = true)
     User findByUsername(String username);
 }

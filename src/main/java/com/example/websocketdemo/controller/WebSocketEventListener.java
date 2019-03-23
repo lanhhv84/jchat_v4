@@ -1,7 +1,7 @@
 package com.example.websocketdemo.controller;
 
-import static java.lang.String.format;
-
+import com.example.websocketdemo.model.ChatMessage;
+import com.example.websocketdemo.model.ChatMessage.MessageType;
 import com.example.websocketdemo.model.Key;
 import com.example.websocketdemo.model.User;
 import com.example.websocketdemo.service.KeyService;
@@ -16,11 +16,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import com.example.websocketdemo.model.ChatMessage;
-import com.example.websocketdemo.model.ChatMessage.MessageType;
-
 import java.util.Calendar;
 import java.util.Date;
+
+import static java.lang.String.format;
 
 @Component
 public class WebSocketEventListener {

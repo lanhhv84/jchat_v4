@@ -1,13 +1,12 @@
 package com.example.websocketdemo.service;
 
-import com.example.websocketdemo.crypt.CryptoException;
+import com.example.websocketdemo.crypt.Crypto;
+import com.example.websocketdemo.crypt.Hasher;
 import com.example.websocketdemo.exception.FileStorageException;
 import com.example.websocketdemo.exception.MyFileNotFoundException;
+import com.example.websocketdemo.model.FileInfo;
+import com.example.websocketdemo.model.User;
 import com.example.websocketdemo.property.FileStorageProperties;
-
-import net.bytebuddy.asm.Advice.This;
-
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -16,26 +15,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class FileStorageService {
+
+
+    @Autowired
+    Hasher hasher;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    FileInfoService fileInfoService;
+
+    @Autowired
+    Crypto crypto;
 
     private final Path fileStorageLocation;
 
@@ -51,51 +56,50 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file, String option) throws CryptoException {
+    public Map<String, String> storeFile(MultipartFile file, String option, String username) throws IOException {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
-        try {
-            if (fileName.contains("..")) {
-                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
-            }
-            Path targetLocation = this.fileStorageLocation.resolve(fileName);
-            if (option.equals("AES")){
-                byte[] inputBytes = file.getBytes();
-                String key = RandomStringUtils.randomAscii(16);
-                Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
-                Cipher cipher = Cipher.getInstance("AES");
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-                byte[] outputBytes = cipher.doFinal(inputBytes);
-                byte[] result = ArrayUtils.addAll(outputBytes, key.getBytes());
-                File outputFile = new File(fileName);
-                FileOutputStream outputStream = new FileOutputStream(outputFile);
-                outputStream.write(result);
-                Files.copy(new FileInputStream(outputFile), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-                outputStream.close();
-            } else if (option.equals("RSA")){
+        User owner = userService.findOne(username);
 
-            } else if (option.equals("BlowFish")){
-                byte[] inputBytes = file.getBytes();
-                String key = RandomStringUtils.randomAscii(16);
-                Key secretKey = new SecretKeySpec(key.getBytes(), "Blowfish");
-                Cipher cipher = Cipher.getInstance("Blowfish");
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-                byte[] outputBytes = cipher.doFinal(inputBytes);
-                byte[] result = ArrayUtils.addAll(outputBytes, key.getBytes());
-                File outputFile = new File(fileName);
-                FileOutputStream outputStream = new FileOutputStream(outputFile);
-                outputStream.write(result);
-                Files.copy(new FileInputStream(outputFile), targetLocation, StandardCopyOption.REPLACE_EXISTING);
-                outputStream.close();
-            }
-            return fileName;
-        } catch (IOException ex) {
-            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException | BadPaddingException
-                | IllegalBlockSizeException ex) {
-                throw new CryptoException("Error encrypting/decrypting file", ex);
+        FileInfo fileInfo = new FileInfo();
+        if (fileName.contains("..")) {
+            throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
         }
+        byte[] inputBytes = file.getBytes();
+
+
+        String key = RandomStringUtils.randomAscii(16);
+        fileInfo.setKey(key);
+
+        System.out.println(inputBytes.length);
+        byte[] encrypted = crypto.encrypt(inputBytes, option, key);
+
+
+        String newFileName = hasher.hash(encrypted);
+        Path targetLocation = this.fileStorageLocation.resolve(newFileName);
+        File newFile = new File(targetLocation.toUri());
+        newFile.createNewFile();
+        FileOutputStream newFileOutputStream = new FileOutputStream(newFile);
+        newFileOutputStream.write(encrypted);
+
+
+        fileInfo.setAlgorithm(option);
+        fileInfo.setNewName(newFileName);
+        fileInfo.setOldName(fileName);
+        fileInfo.setSendTime(Calendar.getInstance().getTime());
+        fileInfo.setOwner(owner);
+
+        fileInfoService.add(fileInfo);
+
+
+        Map<String, String> res = new HashMap<>();
+        res.put("old", fileName);
+        res.put("new", newFileName);
+        res.put("size", String.valueOf(file.getSize()));
+
+
+        return res;
 
     }
 
@@ -103,7 +107,7 @@ public class FileStorageService {
         try {
             Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
-            if(resource.exists()) {
+            if (resource.exists()) {
                 System.out.println(resource);
                 return resource;
             } else {
@@ -112,5 +116,9 @@ public class FileStorageService {
         } catch (MalformedURLException ex) {
             throw new MyFileNotFoundException("File not found " + fileName, ex);
         }
+    }
+
+    public Path getFileStorageLocation() {
+        return fileStorageLocation;
     }
 }

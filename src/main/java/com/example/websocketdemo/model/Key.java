@@ -1,7 +1,7 @@
 package com.example.websocketdemo.model;
 
 import javax.persistence.*;
-import java.sql.Time;
+import java.util.Date;
 
 
 @Entity
@@ -20,10 +20,10 @@ public class Key {
     private boolean isAsym;
 
     @Column(name = "created_time")
-    private Time creationTime;
+    private Date creationTime;
 
     @Column(name = "expired_time")
-    private Time expiredTime;
+    private Date expiredTime;
 
     @Column(name = "is_public")
     private boolean isPublic;
@@ -33,7 +33,7 @@ public class Key {
     private User owner;
 
 
-    public Key(String key, boolean isAsym, Time creationTime, Time expiredTime, boolean isPublic, User owner) {
+    public Key(String key, boolean isAsym, Date creationTime, Date expiredTime, boolean isPublic, User owner) {
         this.key = key;
         this.isAsym = isAsym;
         this.creationTime = creationTime;
@@ -77,19 +77,19 @@ public class Key {
         isAsym = asym;
     }
 
-    public Time getCreationTime() {
+    public Date getCreationTime() {
         return creationTime;
     }
 
-    public void setCreationTime(Time creationTime) {
+    public void setCreationTime(Date creationTime) {
         this.creationTime = creationTime;
     }
 
-    public Time getExpiredTime() {
+    public Date getExpiredTime() {
         return expiredTime;
     }
 
-    public void setExpiredTime(Time expiredTime) {
+    public void setExpiredTime(Date expiredTime) {
         this.expiredTime = expiredTime;
     }
 

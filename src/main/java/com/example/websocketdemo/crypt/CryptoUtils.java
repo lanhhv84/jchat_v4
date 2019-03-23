@@ -1,31 +1,24 @@
 package com.example.websocketdemo.crypt;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.Arrays;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.security.*;
+import java.util.Arrays;
 
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 /**
  * A utility class that encrypts or decrypts a file.
- * @author www.codejava.net
  *
+ * @author www.codejava.net
  */
 public class CryptoUtils {
     private static final String SYMMETRIC_ALGORITHM = "AES";
@@ -70,12 +63,13 @@ public class CryptoUtils {
             outputStream.close();
 
         } catch (NoSuchPaddingException | NoSuchAlgorithmException
-                | InvalidKeyException| BadPaddingException
-                | IllegalBlockSizeException |IOException ex) {
+                | InvalidKeyException | BadPaddingException
+                | IllegalBlockSizeException | IOException ex) {
             throw new CryptoException("Error encrypting/decrypting file", ex);
         }
 
     }
+
     public void symmetricDecrypt(File inputFile, File outputFile) throws CryptoException {
         try {
             FileInputStream inputStream = new FileInputStream(inputFile);
@@ -96,8 +90,8 @@ public class CryptoUtils {
             inputStream.close();
             outputStream.close();
         } catch (NoSuchPaddingException | NoSuchAlgorithmException
-                | InvalidKeyException| BadPaddingException
-                | IllegalBlockSizeException |IOException ex) {
+                | InvalidKeyException | BadPaddingException
+                | IllegalBlockSizeException | IOException ex) {
             throw new CryptoException("Error encrypting/decrypting file", ex);
         }
     }
@@ -112,18 +106,19 @@ public class CryptoUtils {
             cipher.init(Cipher.ENCRYPT_MODE, pub);
             int len;
             while ((len = inputStream.read(inputBytes)) != -1) {
-                if (len < 245) Arrays.fill(inputBytes, len, 245, (byte)0);
+                if (len < 245) Arrays.fill(inputBytes, len, 245, (byte) 0);
                 byte[] outputBytes = cipher.doFinal(inputBytes);
                 outputStream.write(outputBytes);
             }
             inputStream.close();
             outputStream.close();
         } catch (NoSuchPaddingException | NoSuchAlgorithmException
-                | InvalidKeyException| BadPaddingException
-                | IllegalBlockSizeException |IOException ex) {
+                | InvalidKeyException | BadPaddingException
+                | IllegalBlockSizeException | IOException ex) {
             throw new CryptoException("Error encrypting/decrypting file", ex);
         }
     }
+
     public void asymmetricDecrypt(File inputFile, File outputFile) throws CryptoException {
         try {
             FileInputStream inputStream = new FileInputStream(inputFile);
@@ -139,8 +134,8 @@ public class CryptoUtils {
             inputStream.close();
             outputStream.close();
         } catch (NoSuchPaddingException | NoSuchAlgorithmException
-                | InvalidKeyException| BadPaddingException
-                | IllegalBlockSizeException |IOException ex) {
+                | InvalidKeyException | BadPaddingException
+                | IllegalBlockSizeException | IOException ex) {
             throw new CryptoException("Error encrypting/decrypting file", ex);
         }
     }

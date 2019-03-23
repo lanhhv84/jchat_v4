@@ -6,6 +6,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class KeyService extends IService<Key, KeyDB> {
-    public Key findLastPublicByUserId(int userId) { return db.findLast(userId, true); }
-    public Key findLastPrivateByUserId(int userId) { return db.findLast(userId, false); }
+    public Key findLastPublicByUserId(int userId) {
+        return db.findLast(userId, true);
+    }
+
+    public Key findLastPrivateByUserId(int userId) {
+        return db.findLast(userId, false);
+    }
 }

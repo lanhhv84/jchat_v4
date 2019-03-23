@@ -1,7 +1,7 @@
 package com.example.websocketdemo.controller;
 
-import static java.lang.String.format;
-
+import com.example.websocketdemo.model.ChatMessage;
+import com.example.websocketdemo.model.ChatMessage.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +12,7 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
-import com.example.websocketdemo.model.ChatMessage;
-import com.example.websocketdemo.model.ChatMessage.MessageType;
+import static java.lang.String.format;
 
 
 @Controller

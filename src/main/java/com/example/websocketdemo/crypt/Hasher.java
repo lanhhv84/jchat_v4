@@ -1,14 +1,14 @@
 package com.example.websocketdemo.crypt;
 
-import org.springframework.context.annotation.Bean;
+import org.apache.commons.codec.binary.Hex;
+import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Calendar;
-import org.apache.commons.codec.binary.Hex;
 
+
+@Service
 public class Hasher {
 
     MessageDigest digest;
@@ -17,20 +17,18 @@ public class Hasher {
         try {
             digest = MessageDigest.getInstance("SHA-256");
 
-        }
-        catch (NoSuchAlgorithmException ex) {
+        } catch (NoSuchAlgorithmException ex) {
 
         }
 
     }
 
     public String hash(byte[] file) {
-        return String.valueOf(Calendar.getInstance().getTimeInMillis());
+        return Hex.encodeHexString(digest.digest(file));
     }
 
     public String hash(String value) {
-        byte[] digestedMessage =  digest.digest(value.getBytes(StandardCharsets.UTF_8));
-        String ans = Hex.encodeHexString(digestedMessage);
-        return ans;
+        byte[] digestedMessage = digest.digest(value.getBytes(StandardCharsets.UTF_8));
+        return Hex.encodeHexString(digestedMessage);
     }
 }

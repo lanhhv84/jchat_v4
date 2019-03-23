@@ -11,7 +11,6 @@ import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -24,6 +23,8 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+
     @Autowired
     KeyService keyService;
 
@@ -41,8 +42,7 @@ public class UserController {
                                  @RequestParam("password") String password) {
         if (userService.existsByUserName(username)) {
             return ok(false);
-        }
-        else {
+        } else {
             User user = new User(username, hasher.hash(password));
             userService.add(user);
             return ok(true);
@@ -59,7 +59,7 @@ public class UserController {
             // Create new key
             try {
                 cryptoUtils.keyGenerator();
-                PublicKey publicKey =  cryptoUtils.getPub();
+                PublicKey publicKey = cryptoUtils.getPub();
                 String key = Hex.encodeHexString(publicKey.getEncoded());
                 User user = userService.findOne(username);
                 Key keyModel = new Key(key, true, true, user);
@@ -71,14 +71,12 @@ public class UserController {
                 keyService.add(keyModel);
                 keyService.add(privateKeyModel);
 
-            }
-            catch (CryptoException ex) {
+            } catch (CryptoException ex) {
 
             }
 
             return ok(true);
-        }
-        else {
+        } else {
             return ok(false);
         }
 
