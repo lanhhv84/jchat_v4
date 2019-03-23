@@ -3,7 +3,9 @@ package com.example.websocketdemo.controller;
 import com.example.websocketdemo.crypt.CryptoException;
 import com.example.websocketdemo.crypt.CryptoUtils;
 import com.example.websocketdemo.crypt.Hasher;
+import com.example.websocketdemo.model.Key;
 import com.example.websocketdemo.model.User;
+import com.example.websocketdemo.service.KeyService;
 import com.example.websocketdemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+    @Autowired
+    KeyService keyService;
+
 
     Hasher hasher = new Hasher();
 
@@ -54,6 +59,15 @@ public class UserController {
             try {
                 cryptoUtils.keyGenerator();
                 PublicKey publicKey =  cryptoUtils.getPub();
+                String key = CryptoUtils.getKey(publicKey.getEncoded());
+                User user = userService.findOne(username);
+                Key keyModel = new Key(key, true, user);
+                keyModel.setPublic(true);
+                System.out.println(CryptoUtils.getKey(cryptoUtils.getPvt().getEncoded()).length());
+                Key privateKeyModel = new Key(CryptoUtils.getKey(cryptoUtils.getPvt().getEncoded()), true, user);
+                keyService.add(keyModel);
+                keyService.add(privateKeyModel);
+
             }
             catch (CryptoException ex) {
 
