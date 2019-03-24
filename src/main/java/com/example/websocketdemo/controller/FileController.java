@@ -5,6 +5,7 @@ import com.example.websocketdemo.model.FileInfo;
 import com.example.websocketdemo.payload.UploadFileResponse;
 import com.example.websocketdemo.service.FileInfoService;
 import com.example.websocketdemo.service.FileStorageService;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.nio.file.Files;
 import java.security.InvalidAlgorithmParameterException;
 import java.util.HashMap;
@@ -67,19 +67,24 @@ public class FileController {
     }
 
     @GetMapping("/downloadFile/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
+    public void downloadFile(@PathVariable String fileName,
+                             HttpServletRequest request, HttpServletResponse response) {
 
         Resource resource = fileStorageService.loadFileAsResource(fileName);
+        Resource plainResource = null;
         File plainFile = null;
         try {
             File encryptedFile = resource.getFile();
             byte[] encryptedData = Files.readAllBytes(encryptedFile.toPath());
 
             FileInfo fileInfo = fileInfoService.findFirstByNewName(encryptedFile.getName());
-            String key = fileInfo.getKey();
+            byte[] key = fileInfo.getKey();
             byte[] plainData = null;
             try {
                 plainData = crypto.decrypt(encryptedData, fileInfo.getAlgorithm(), key);
+                for (int i = 0 ; i <  plainData.length ; ++i) {
+                    System.out.print( plainData[i]);
+                }
             } catch (InvalidAlgorithmParameterException ex) {
                 ex.printStackTrace();
             }
@@ -90,29 +95,29 @@ public class FileController {
             FileOutputStream fileOutputStream = new FileOutputStream(plainFile);
             fileOutputStream.write(plainData);
 
+            plainResource = fileStorageService.loadFileAsResource(plainFile.getName());
+
+            fileOutputStream.close();
+
 
         } catch (IOException ex) {
 
         }
 
 
-        // Try to determine file's content type
-        String contentType = null;
         try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException ex) {
-            logger.info("Could not determine file type.");
+            OutputStream out = response.getOutputStream();
+            FileInputStream in = new FileInputStream(plainFile);
+            IOUtils.copy(in, out);
+            out.close();
+            in.close();
+            plainFile.delete();
+        }
+        catch (IOException ex) {
+
         }
 
-        // Fallback to the default content type if type could not be determined
-        if (contentType == null) {
-            contentType = "application/octet-stream";
-        }
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + plainFile.getName() + "\"")
-                .body(resource);
     }
 
 }

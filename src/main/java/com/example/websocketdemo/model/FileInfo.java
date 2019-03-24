@@ -26,7 +26,7 @@ public class FileInfo {
     private Date sendTime;
 
     @Column(name = "symmetric_key", length = 2047)
-    private String key;
+    private byte[] key;
 
     @ManyToOne(fetch = FetchType.EAGER, targetEntity = User.class)
     @JoinColumn(name = "owner_id")
@@ -86,11 +86,11 @@ public class FileInfo {
         this.sendTime = sendTime;
     }
 
-    public String getKey() {
+    public byte[] getKey() {
         return key;
     }
 
-    public void setKey(String key) {
+    public void setKey(byte[] key) {
         this.key = key;
     }
 }
