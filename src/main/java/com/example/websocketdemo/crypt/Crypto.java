@@ -17,7 +17,7 @@ import java.util.Map;
 public class Crypto {
     public static final byte[] initVector = new byte[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-    public Map<String, byte[]> encrypt(byte[] plainData, String algorithm) {
+    public Map<String, byte[]> encrypt(byte[] plainData, String algorithm, byte[] publicKey) {
         System.out.println(plainData.length);
         byte[] encrypted = null;
         Map<String, byte[]> values = new HashMap<>();
@@ -56,7 +56,7 @@ public class Crypto {
         return values;
     }
 
-    public byte[] decrypt(byte[] encrypted, String algorithm, byte[] key) throws InvalidAlgorithmParameterException, UnsupportedEncodingException {
+    public byte[] decrypt(byte[] encrypted, String algorithm, byte[] key, byte[] privateKey) throws InvalidAlgorithmParameterException, UnsupportedEncodingException {
         Cipher cipher = null;
         Key secretKey = null;
         encrypted = Base64.decodeBase64(encrypted);

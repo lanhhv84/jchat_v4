@@ -216,4 +216,18 @@ singleUploadForm.addEventListener('submit', function(event){
 }, true);
 
 
+function onSelectAlgorithm(event) {
+    var userReceiverInput = document.getElementById("receiverInput");
+    switch (document.getElementById("option").value) {
+        case "RSA":
+            console.log("RSA");
+            userReceiverInput.style.display = "block";
+            break;
+        default:
+            userReceiverInput.style.display = "none";
+            console.log("Other");
+            break;
+    }
+}
+
 checkLogin();

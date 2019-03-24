@@ -1,8 +1,11 @@
 package com.example.websocketdemo.model;
 
 import javax.persistence.*;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 @Entity
 @Table(name = "user_data")
@@ -31,6 +34,9 @@ public class User {
 
     @ManyToMany(mappedBy = "users")
     private Set<Room> rooms = new HashSet<>();
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER  )
+    private Set<Key> keys = new HashSet<>();
 
     public int getId() {
         return id;
@@ -63,5 +69,41 @@ public class User {
 
     public void setRooms(Set<Room> rooms) {
         this.rooms = rooms;
+    }
+
+    public Set<Key> getKeys() {
+        return keys;
+    }
+
+    public void setKeys(Set<Key> keys) {
+        this.keys = keys;
+    }
+
+    public Key getLastPublic() {
+        Optional<Key> key = getKeys().stream().filter(Key::isPublic).max(new Comparator<Key>() {
+            @Override
+            public int compare(Key o1, Key o2) {
+                return o1.getCreationTime().compareTo(o2.getCreationTime());
+            }
+        });
+
+        return key.isPresent() ? key.get() : null;
+
+    }
+
+    public Key getLastPrivate() {
+        Optional<Key> key = getKeys().stream().filter(new Predicate<Key>() {
+            @Override
+            public boolean test(Key key) {
+                return !key.isPublic();
+            }
+        }).max(new Comparator<Key>() {
+            @Override
+            public int compare(Key o1, Key o2) {
+                return o1.getCreationTime().compareTo(o2.getCreationTime());
+            }
+        });
+
+        return key.isPresent() ? key.get() : null;
     }
 }

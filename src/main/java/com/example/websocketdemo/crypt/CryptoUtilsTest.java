@@ -16,15 +16,15 @@ import java.util.Map;
  */
 public class CryptoUtilsTest {
     public static void main(String[] args) throws UnsupportedEncodingException, IOException, InvalidAlgorithmParameterException {
-        File file = new File("/home/hvlpr/Desktop/1611731_TNMT.pdf");
-        byte[] data =  Files.readAllBytes(file.toPath());
-        Crypto crypto = new Crypto();
-        System.out.println(data.length);
-        System.out.println(file.length());
-        Map<String, byte[]> a = crypto.encrypt(data, "AES");
-        byte[] encrypted = a.get("value");
-        byte[] plain = crypto.decrypt(encrypted, "AES", a.get("key"));
-        System.out.println(plain.length);
+//        File file = new File("/home/hvlpr/Desktop/1611731_TNMT.pdf");
+//        byte[] data =  Files.readAllBytes(file.toPath());
+//        Crypto crypto = new Crypto();
+//        System.out.println(data.length);
+//        System.out.println(file.length());
+//        Map<String, byte[]> a = crypto.encrypt(data, "AES");
+//        byte[] encrypted = a.get("value");
+//        byte[] plain = crypto.decrypt(encrypted, "AES", a.get("key"));
+//        System.out.println(plain.length);
 
 
 

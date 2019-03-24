@@ -71,7 +71,6 @@ public class FileController {
                              HttpServletRequest request, HttpServletResponse response) {
 
         Resource resource = fileStorageService.loadFileAsResource(fileName);
-        Resource plainResource = null;
         File plainFile = null;
         try {
             File encryptedFile = resource.getFile();
@@ -81,7 +80,7 @@ public class FileController {
             byte[] key = fileInfo.getKey();
             byte[] plainData = null;
             try {
-                plainData = crypto.decrypt(encryptedData, fileInfo.getAlgorithm(), key);
+                plainData = crypto.decrypt(encryptedData, fileInfo.getAlgorithm(), key, null);
                 for (int i = 0 ; i <  plainData.length ; ++i) {
                     System.out.print( plainData[i]);
                 }
@@ -94,8 +93,6 @@ public class FileController {
             plainFile.createNewFile();
             FileOutputStream fileOutputStream = new FileOutputStream(plainFile);
             fileOutputStream.write(plainData);
-
-            plainResource = fileStorageService.loadFileAsResource(plainFile.getName());
 
             fileOutputStream.close();
 

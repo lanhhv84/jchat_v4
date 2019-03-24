@@ -5,6 +5,7 @@ import com.example.websocketdemo.crypt.Hasher;
 import com.example.websocketdemo.exception.FileStorageException;
 import com.example.websocketdemo.exception.MyFileNotFoundException;
 import com.example.websocketdemo.model.FileInfo;
+import com.example.websocketdemo.model.Key;
 import com.example.websocketdemo.model.User;
 import com.example.websocketdemo.property.FileStorageProperties;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -70,7 +71,8 @@ public class FileStorageService {
         byte[] inputBytes = file.getBytes();
 
         System.out.println(inputBytes.length);
-        Map<String, byte[]> values = crypto.encrypt(inputBytes, option);
+        Key publicKey = userService.findOne(username).getLastPublic();
+        Map<String, byte[]> values = crypto.encrypt(inputBytes, option, publicKey.getKey());
         byte[] encrypted = values.get("value");
         fileInfo.setKey(values.get("key"));
 

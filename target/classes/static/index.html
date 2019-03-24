@@ -52,11 +52,13 @@
         <form id="singleUploadForm" name="singleUploadForm">
             <input id="singleFileUploadInput" type="file" name="file"
                    class="file-input" required />
-            <select name="option" id="option">
+            <select name="option" id="option" onchange="onSelectAlgorithm()">
                 <option value="AES">AES</option>
                 <option value="RSA">RSA</option>
                 <option value="BlowFish">BlowFish</option>
             </select>
+
+            <input id="receiverInput" type="text" />
             <button type="submit" class="primary submit-btn">File</button>
         </form>
         <div class="upload-response">

@@ -14,7 +14,7 @@ public class Key {
     private int id;
 
     @Column(name = "key_value", length = 3071)
-    private String key;
+    private byte[] key;
 
     @Column(name = "asym")
     private boolean isAsym;
@@ -33,7 +33,7 @@ public class Key {
     private User owner;
 
 
-    public Key(String key, boolean isAsym, Date creationTime, Date expiredTime, boolean isPublic, User owner) {
+    public Key(byte[] key, boolean isAsym, Date creationTime, Date expiredTime, boolean isPublic, User owner) {
         this.key = key;
         this.isAsym = isAsym;
         this.creationTime = creationTime;
@@ -42,7 +42,7 @@ public class Key {
         this.owner = owner;
     }
 
-    public Key(String key, boolean isAsym, boolean isPublic, User owner) {
+    public Key(byte[] key, boolean isAsym, boolean isPublic, User owner) {
         this.key = key;
         this.isAsym = isAsym;
         this.isPublic = isPublic;
@@ -50,7 +50,7 @@ public class Key {
     }
 
     public Key() {
-        this("", true, true, null);
+        this(new byte[0], true, true, null);
     }
 
     public int getId() {
@@ -61,11 +61,11 @@ public class Key {
         this.id = id;
     }
 
-    public String getKey() {
+    public byte[] getKey() {
         return key;
     }
 
-    public void setKey(String key) {
+    public void setKey(byte[] key) {
         this.key = key;
     }
 

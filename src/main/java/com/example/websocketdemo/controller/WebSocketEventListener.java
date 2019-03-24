@@ -17,7 +17,9 @@ import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.function.Predicate;
 
 import static java.lang.String.format;
 
@@ -51,9 +53,19 @@ public class WebSocketEventListener {
 
             // Alter expired time
             User user = userService.findOne(username);
-            Key lastKey = keyService.findLastPublicByUserId(user.getId());
-            lastKey.setExpiredTime(Calendar.getInstance().getTime());
-            keyService.add(lastKey);
+
+            Key publicKey = user.getLastPublic();
+            Key privateKey = user.getLastPrivate();
+
+
+            publicKey.setExpiredTime(Calendar.getInstance().getTime());
+            privateKey.setExpiredTime(Calendar.getInstance().getTime());
+
+            System.out.println("Key expired");
+
+            userService.add(user);
+            keyService.add(publicKey);
+            keyService.add(privateKey);
 
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setType(MessageType.LEAVE);

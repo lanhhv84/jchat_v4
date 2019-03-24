@@ -7,6 +7,7 @@ import com.example.websocketdemo.model.Key;
 import com.example.websocketdemo.model.User;
 import com.example.websocketdemo.service.KeyService;
 import com.example.websocketdemo.service.UserService;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.PublicKey;
+import java.util.Calendar;
 import java.util.HashMap;
 
 @Controller
@@ -60,14 +62,15 @@ public class UserController {
             try {
                 cryptoUtils.keyGenerator();
                 PublicKey publicKey = cryptoUtils.getPub();
-                String key = Hex.encodeHexString(publicKey.getEncoded());
+                byte[] key = Base64.encodeBase64(publicKey.getEncoded());
                 User user = userService.findOne(username);
                 Key keyModel = new Key(key, true, true, user);
-                Key privateKeyModel =
-                        new Key(Hex.encodeHexString(cryptoUtils.getPvt().getEncoded()),
+                keyModel.setCreationTime(Calendar.getInstance().getTime());
+                Key privateKeyModel = new Key(Base64.encodeBase64((cryptoUtils.getPvt().getEncoded())),
                                 true,
                                 false,
                                 user);
+                privateKeyModel.setCreationTime(Calendar.getInstance().getTime());
                 keyService.add(keyModel);
                 keyService.add(privateKeyModel);
 
