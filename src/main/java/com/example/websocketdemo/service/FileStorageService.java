@@ -67,14 +67,7 @@ public class FileStorageService {
             throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
         }
 
-        File convFile = fileStorageLocation.resolve("tempFile").toFile();
-        convFile.createNewFile();
-        FileOutputStream fos = new FileOutputStream(convFile);
-        fos.write(file.getBytes());
-        fos.close();
-
-
-        byte[] inputBytes = Files.readAllBytes(convFile.toPath());
+        byte[] inputBytes = file.getBytes();
 
         System.out.println(inputBytes.length);
         Map<String, byte[]> values = crypto.encrypt(inputBytes, option);
