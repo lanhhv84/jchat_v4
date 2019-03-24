@@ -168,11 +168,12 @@ function checkLogin() {
     }
 }
 
-function uploadSingleFile(file, option) {
+function uploadSingleFile(file, option, receiver) {
     var formData = new FormData();
     formData.append("file", file);
     formData.append("option", option);
     formData.append("owner", sessionStorage.getItem("username"));
+    formData.append("receiver", receiver);
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "/uploadFile");
@@ -211,7 +212,7 @@ singleUploadForm.addEventListener('submit', function(event){
         singleFileUploadError.style.display = "block";
     }
 
-    uploadSingleFile(files[0], document.getElementById("option").value);
+    uploadSingleFile(files[0], document.getElementById("option").value, document.getElementById("receiverInput").value);
     event.preventDefault();
 }, true);
 

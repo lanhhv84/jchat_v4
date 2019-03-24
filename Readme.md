@@ -8,9 +8,10 @@ You can checkout the live version of the application at https://spring-ws-chat.h
 - [x] Login, Sign up
 - [x] Room chat
 - [x] Send file
-- [ ] Key server
-- [ ] Encrypt message
-- [ ] Encrypt file 
+- [x] Key server
+- [x] Encrypt file 
+- [ ] Process receiver of RSA-encrypted file
+
 
 ## Requirements
 

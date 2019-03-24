@@ -80,7 +80,12 @@ public class User {
     }
 
     public Key getLastPublic() {
-        Optional<Key> key = getKeys().stream().filter(Key::isPublic).max(new Comparator<Key>() {
+        Optional<Key> key = getKeys().stream().filter(new Predicate<Key>() {
+            @Override
+            public boolean test(Key key) {
+                return key.isPublic();
+            }
+        }).max(new Comparator<Key>() {
             @Override
             public int compare(Key o1, Key o2) {
                 return o1.getCreationTime().compareTo(o2.getCreationTime());
@@ -104,6 +109,6 @@ public class User {
             }
         });
 
-        return key.isPresent() ? key.get() : null;
+        return key.get();
     }
 }

@@ -72,7 +72,7 @@ public class FileStorageService {
 
         System.out.println(inputBytes.length);
         Key publicKey = userService.findOne(username).getLastPublic();
-        Map<String, byte[]> values = crypto.encrypt(inputBytes, option, publicKey.getKey());
+        Map<String, byte[]> values = crypto.encrypt(inputBytes, option, publicKey.toPublic());
         byte[] encrypted = values.get("value");
         fileInfo.setKey(values.get("key"));
 

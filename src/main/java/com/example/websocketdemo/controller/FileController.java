@@ -2,9 +2,11 @@ package com.example.websocketdemo.controller;
 
 import com.example.websocketdemo.crypt.Crypto;
 import com.example.websocketdemo.model.FileInfo;
+import com.example.websocketdemo.model.User;
 import com.example.websocketdemo.payload.UploadFileResponse;
 import com.example.websocketdemo.service.FileInfoService;
 import com.example.websocketdemo.service.FileStorageService;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +45,13 @@ public class FileController {
     @PostMapping("/uploadFile")
     public Map<String, String> uploadFile(@RequestParam("file") MultipartFile file,
                                           @RequestParam("option") String option,
-                                          @RequestParam("owner") String username) {
+                                          @RequestParam("owner") String username,
+                                          @RequestParam("receiver") String receiver) {
+        System.out.println("Receiving file");
+        System.out.print("Length: ");
+        System.out.println(file.getSize());
+        System.out.print("Receiver:");
+        System.out.println(receiver);
         Map<String, String> res = null;
         try {
             res = fileStorageService.storeFile(file, option, username);
@@ -79,14 +87,13 @@ public class FileController {
             FileInfo fileInfo = fileInfoService.findFirstByNewName(encryptedFile.getName());
             byte[] key = fileInfo.getKey();
             byte[] plainData = null;
-            try {
-                plainData = crypto.decrypt(encryptedData, fileInfo.getAlgorithm(), key, null);
-                for (int i = 0 ; i <  plainData.length ; ++i) {
-                    System.out.print( plainData[i]);
-                }
-            } catch (InvalidAlgorithmParameterException ex) {
-                ex.printStackTrace();
+            User owner = fileInfo.getOwner();
+            if (owner.getLastPrivate().toPrivate() == null) {
+                System.out.println("Key is null");
+                System.out.println(Hex.encodeHexString(owner.getLastPrivate().getKey()));
             }
+
+            plainData = crypto.decrypt(encryptedData, fileInfo.getAlgorithm(), key, owner.getLastPrivate().toPrivate());
 
 
             plainFile = fileStorageService.getFileStorageLocation().resolve(fileInfo.getOldName()).toFile();

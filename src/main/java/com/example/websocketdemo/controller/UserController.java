@@ -1,5 +1,6 @@
 package com.example.websocketdemo.controller;
 
+import com.example.websocketdemo.crypt.Crypto;
 import com.example.websocketdemo.crypt.CryptoException;
 import com.example.websocketdemo.crypt.CryptoUtils;
 import com.example.websocketdemo.crypt.Hasher;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -29,6 +31,9 @@ public class UserController {
 
     @Autowired
     KeyService keyService;
+
+    @Autowired
+    Crypto crypto;
 
 
     Hasher hasher = new Hasher();
@@ -61,17 +66,15 @@ public class UserController {
             // Create new key
             try {
                 cryptoUtils.keyGenerator();
-                PublicKey publicKey = cryptoUtils.getPub();
-                byte[] key = Base64.encodeBase64(publicKey.getEncoded());
+                KeyPair keyPair = crypto.generateKey();
+                byte[] publicKey = Base64.encodeBase64(keyPair.getPublic().getEncoded());
+                byte[] privateKey = Base64.encodeBase64(keyPair.getPrivate().getEncoded());
                 User user = userService.findOne(username);
-                Key keyModel = new Key(key, true, true, user);
-                keyModel.setCreationTime(Calendar.getInstance().getTime());
-                Key privateKeyModel = new Key(Base64.encodeBase64((cryptoUtils.getPvt().getEncoded())),
-                                true,
-                                false,
-                                user);
+                Key publicKeyModel = new Key(publicKey, true, true, user);
+                publicKeyModel.setCreationTime(Calendar.getInstance().getTime());
+                Key privateKeyModel = new Key(privateKey,true, false, user);
                 privateKeyModel.setCreationTime(Calendar.getInstance().getTime());
-                keyService.add(keyModel);
+                keyService.add(publicKeyModel);
                 keyService.add(privateKeyModel);
 
             } catch (CryptoException ex) {
