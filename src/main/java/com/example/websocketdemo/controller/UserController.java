@@ -13,6 +13,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -41,10 +42,11 @@ public class UserController {
     public ResponseEntity<?> ok(boolean value) {
         HashMap<String, Boolean> values = new HashMap<>();
         values.put("value", value);
-        return ResponseEntity.ok(values);
+        return ResponseEntity.ok().header("Access-Control-Allow-Origin", "*").body(values);
     }
 
     @RequestMapping("/add")
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> add(@RequestParam("username") String username,
                                  @RequestParam("password") String password) {
         if (userService.existsByUserName(username)) {
@@ -57,6 +59,7 @@ public class UserController {
     }
 
     @RequestMapping("/login")
+    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> login(@RequestParam("username") String username,
                                    @RequestParam("password") String password) {
 
@@ -78,8 +81,9 @@ public class UserController {
                 keyService.add(privateKeyModel);
 
             } catch (CryptoException ex) {
-
+                ex.printStackTrace();
             }
+            // Finish creating key
 
             return ok(true);
         } else {

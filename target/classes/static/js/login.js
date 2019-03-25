@@ -9,6 +9,19 @@ document.querySelector('#login-form').addEventListener('submit', function(e) {
         obj = data.next();
     } // parse FormData into simple Object
 
+    var PassPhrase = "kbMo1CRGlMbztN3WkdkA";
+    var RSAKeyLength = 2048;
+    var RSAkey = cryptico.generateRSAKey(PassPhrase, RSAKeyLength);
+    sessionStorage.setItem("privateKey", cryptico.privateKeyString(RSAkey));
+
+
+
+
+
+
+
+
+
 
     var request = $.ajax({
         url: '/user/login',
@@ -22,6 +35,12 @@ document.querySelector('#login-form').addEventListener('submit', function(e) {
     request.done(function(msg) {
         if (msg["value"] === true) {
             sessionStorage.setItem("username", retrieved["username"]);
+            // Register public key
+            // var keyRequest = $.ajax({
+            //     url: '/key/register',
+            //     type: "GET",
+            //     data: {key: cryptico.publicKeyString(RSAkey), username: retrieved["username"]}
+            // });
             window.location.replace("/index.html");
         }
         else {
@@ -30,3 +49,4 @@ document.querySelector('#login-form').addEventListener('submit', function(e) {
     });
 
 });
+

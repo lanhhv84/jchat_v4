@@ -55,17 +55,14 @@ public class WebSocketEventListener {
             User user = userService.findOne(username);
 
             Key publicKey = user.getLastPublic();
-            Key privateKey = user.getLastPrivate();
 
 
             publicKey.setExpiredTime(Calendar.getInstance().getTime());
-            privateKey.setExpiredTime(Calendar.getInstance().getTime());
 
             System.out.println("Key expired");
 
             userService.add(user);
             keyService.add(publicKey);
-            keyService.add(privateKey);
 
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setType(MessageType.LEAVE);
