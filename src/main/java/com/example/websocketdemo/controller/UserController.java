@@ -42,11 +42,10 @@ public class UserController {
     public ResponseEntity<?> ok(boolean value) {
         HashMap<String, Boolean> values = new HashMap<>();
         values.put("value", value);
-        return ResponseEntity.ok().header("Access-Control-Allow-Origin", "*").body(values);
+        return ResponseEntity.ok(values);
     }
 
     @RequestMapping("/add")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> add(@RequestParam("username") String username,
                                  @RequestParam("password") String password) {
         if (userService.existsByUserName(username)) {
@@ -59,7 +58,6 @@ public class UserController {
     }
 
     @RequestMapping("/login")
-    @CrossOrigin(origins = "http://localhost:3000")
     public ResponseEntity<?> login(@RequestParam("username") String username,
                                    @RequestParam("password") String password) {
 

@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -28,7 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController
+@Controller
+@RequestMapping("/file")
 public class FileController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileController.class);
@@ -42,8 +44,8 @@ public class FileController {
     @Autowired
     private Crypto crypto;
 
-    @PostMapping("/uploadFile")
-    public Map<String, String> uploadFile(@RequestParam("file") MultipartFile file,
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file,
                                           @RequestParam("option") String option,
                                           @RequestParam("owner") String username,
                                           @RequestParam("receiver") String receiver) {
@@ -59,13 +61,13 @@ public class FileController {
             res = new HashMap<>();
         }
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
+                .path("/file/download/")
                 .path(res.get("new"))
                 .toUriString();
         res.put("download", fileDownloadUri);
         res.put("type", file.getContentType());
 
-        return res;
+        return ResponseEntity.ok(res);
     }
 
     @PostMapping("/uploadMultipleFiles")
@@ -74,7 +76,7 @@ public class FileController {
 
     }
 
-    @GetMapping("/downloadFile/{fileName:.+}")
+    @GetMapping("/download/{fileName:.+}")
     public void downloadFile(@PathVariable String fileName,
                              HttpServletRequest request, HttpServletResponse response) {
 

@@ -9,11 +9,11 @@ document.querySelector('#login-form').addEventListener('submit', function(e) {
         obj = data.next();
     } // parse FormData into simple Object
 
-    var PassPhrase = "kbMo1CRGlMbztN3WkdkA";
-    var RSAKeyLength = 2048;
-    var RSAkey = cryptico.generateRSAKey(PassPhrase, RSAKeyLength);
-    sessionStorage.setItem("privateKey", cryptico.privateKeyString(RSAkey));
-
+    // var PassPhrase = "kbMo1CRGlMbztN3WkdkA";
+    // var RSAKeyLength = 2048;
+    // var RSAkey = cryptico.generateRSAKey(PassPhrase, RSAKeyLength);
+    // sessionStorage.setItem("privateKey", cryptico.privateKeyString(RSAkey));
+    //
 
 
 
