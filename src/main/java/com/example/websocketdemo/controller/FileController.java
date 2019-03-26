@@ -6,6 +6,7 @@ import com.example.websocketdemo.model.User;
 import com.example.websocketdemo.payload.UploadFileResponse;
 import com.example.websocketdemo.service.FileInfoService;
 import com.example.websocketdemo.service.FileStorageService;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
@@ -95,7 +96,7 @@ public class FileController {
                 System.out.println(Hex.encodeHexString(owner.getLastPrivate().getKey()));
             }
 
-            plainData = crypto.decrypt(encryptedData, fileInfo.getAlgorithm(), key, owner.getLastPrivate().toPrivate());
+            plainData = crypto.decrypt(Base64.decodeBase64(encryptedData), fileInfo.getAlgorithm() + "2", key, owner.getLastPrivate().toPrivate());
 
 
             plainFile = fileStorageService.getFileStorageLocation().resolve(fileInfo.getOldName()).toFile();

@@ -32,7 +32,9 @@ public class ServerAsymmetricKey {
 
         if (AESKey == null) {
             try {
-                SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey();
+                KeyGenerator gen = KeyGenerator.getInstance("AES");
+                gen.init(128);
+                SecretKey secretKey = gen.generateKey();
                 AESKey = secretKey.getEncoded();
                 System.out.println("AES");
                 System.out.println(new String(AESKey));

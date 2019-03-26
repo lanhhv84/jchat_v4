@@ -32,6 +32,7 @@ public class Crypto {
         byte[] encrypted = null;
         Map<String, byte[]> values = new HashMap<>();
         Cipher cipher = null;
+        System.out.println(algorithm);
         Key secretKey = null;
         try {
             switch (algorithm) {
@@ -39,11 +40,18 @@ public class Crypto {
                     secretKey = KeyGenerator.getInstance("AES").generateKey();
                     IvParameterSpec iv = new IvParameterSpec(initVector);
                     values.put("key", secretKey.getEncoded());
-                    System.out.println("Decrypting with AES with key: " + new String(secretKey.getEncoded()));
-                    cipher = Cipher.getInstance("AES/CBC/PKCS7PADDING");
+                    System.out.println("Encrypting with AES with key: " + new String(secretKey.getEncoded()));
+                    cipher = Cipher.getInstance("AES");
                     cipher.init(Cipher.ENCRYPT_MODE, secretKey);
                     encrypted = cipher.doFinal(plainData);
                     break;
+                case "AES2":
+                    secretKey = KeyGenerator.getInstance("AES").generateKey();
+                    values.put("key", secretKey.getEncoded());
+                    System.out.println("Encrypting with AES with key: " + new String(secretKey.getEncoded()));
+                    cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+                    cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+                    encrypted = cipher.doFinal(plainData);
                 case "RSA":
 //                    cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 //                    cipher.init(Cipher.ENCRYPT_MODE, publicKey);
@@ -110,10 +118,17 @@ public class Crypto {
 
 
                     break;
+                case "AES2":
+                    System.out.println("Decrypting with AES with key: " + new String(key));
+                    secretKey = new SecretKeySpec(key, "AES/ECB/PKCS5Padding");
+                    cipher = Cipher.getInstance("AES");
+                    cipher.init(Cipher.DECRYPT_MODE, secretKey);
+                    plainData = cipher.doFinal(encrypted);
+                    break;
                 case "AES":
                     System.out.println("Decrypting with AES with key: " + new String(key));
                     secretKey = new SecretKeySpec(key, "AES");
-                    cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+                    cipher = Cipher.getInstance("AES");
                     cipher.init(Cipher.DECRYPT_MODE, secretKey);
                     plainData = cipher.doFinal(encrypted);
                     break;

@@ -32,7 +32,7 @@ public class ChatController {
     @MessageMapping("/chat/{roomId}/sendMessage")
     public void sendMessage(@DestinationVariable String roomId, @Payload ChatMessage chatMessage) {
         System.out.println(chatMessage.getContent());
-        chatMessage.setContent(new String(crypto.decrypt(chatMessage.getContent().getBytes(), "AES", org.apache.commons.codec.binary.Base64.encodeBase64(ServerAsymmetricKey.getAESKey()), null)));
+        chatMessage.setContent(new String(crypto.decrypt(chatMessage.getContent().getBytes(), "AES",ServerAsymmetricKey.getAESKey(), null)));
         messagingTemplate.convertAndSend(format("/channel/%s", roomId), chatMessage);
     }
 

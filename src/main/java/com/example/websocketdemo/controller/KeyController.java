@@ -50,6 +50,7 @@ public class KeyController {
         PublicKey publicKey = user.getLastPublic().toPublic();
         byte[] rsaEncryptedKey = (crypto.encrypt(Base64.encodeBase64(ServerAsymmetricKey.getAESKey()), "RSA", publicKey)).get("value");
         String aesStringKey = Base64.encodeBase64String(rsaEncryptedKey);
+        System.out.println("Length of AES Key: " + String.valueOf(Base64.encodeBase64String(ServerAsymmetricKey.getAESKey()).length()));
         System.out.println("AES Encrypted key");
         System.out.println(aesStringKey);
         return ResponseEntity.ok(aesStringKey);

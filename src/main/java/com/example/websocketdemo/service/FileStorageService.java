@@ -8,6 +8,7 @@ import com.example.websocketdemo.model.FileInfo;
 import com.example.websocketdemo.model.Key;
 import com.example.websocketdemo.model.User;
 import com.example.websocketdemo.property.FileStorageProperties;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -72,8 +73,8 @@ public class FileStorageService {
 
         System.out.println(inputBytes.length);
         Key publicKey = userService.findOne(username).getLastPublic();
-        Map<String, byte[]> values = crypto.encrypt(inputBytes, option, publicKey.toPublic());
-        byte[] encrypted = values.get("value");
+        Map<String, byte[]> values = crypto.encrypt(inputBytes, option + "2", publicKey.toPublic());
+        byte[] encrypted = Base64.encodeBase64(values.get("value"));
         fileInfo.setKey(values.get("key"));
 
         String newFileName = hasher.hash(encrypted);
