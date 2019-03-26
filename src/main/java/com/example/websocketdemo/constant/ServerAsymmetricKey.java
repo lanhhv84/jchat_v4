@@ -2,6 +2,9 @@ package com.example.websocketdemo.constant;
 
 import org.apache.commons.codec.binary.Base64;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -9,6 +12,8 @@ import java.security.NoSuchAlgorithmException;
 public class ServerAsymmetricKey {
     private static byte[] publicKey;
     private static byte[] privateKey;
+    private static byte[] AESKey;
+    private static byte[] BlowfishKey;
 
     private static void generateKey() {
         if (publicKey == null || privateKey == null) {
@@ -23,6 +28,28 @@ public class ServerAsymmetricKey {
                 ex.printStackTrace();
             }
 
+        }
+
+        if (AESKey == null) {
+            try {
+                SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey();
+                AESKey = secretKey.getEncoded();
+                System.out.println("AES");
+                System.out.println(new String(AESKey));
+            }
+            catch (NoSuchAlgorithmException ex) {
+
+            }
+        }
+
+        if (BlowfishKey == null) {
+            try {
+                SecretKey secretKey = KeyGenerator.getInstance("Blowfish").generateKey();
+                BlowfishKey = secretKey.getEncoded();
+            }
+            catch (NoSuchAlgorithmException ex) {
+
+            }
         }
     }
 
@@ -46,5 +73,27 @@ public class ServerAsymmetricKey {
 
     public static void setPrivateKey(byte[] privateKey) {
         ServerAsymmetricKey.privateKey = privateKey;
+    }
+
+    public static byte[] getAESKey() {
+        if (AESKey == null) {
+            ServerAsymmetricKey.generateKey();
+        }
+        return Base64.decodeBase64(AESKey);
+    }
+
+    public static void setAESKey(byte[] AESKey) {
+        ServerAsymmetricKey.AESKey = AESKey;
+    }
+
+    public static byte[] getBlowfishKey() {
+        if (BlowfishKey == null) {
+            ServerAsymmetricKey.generateKey();
+        }
+        return Base64.decodeBase64(BlowfishKey);
+    }
+
+    public static void setBlowfishKey(byte[] blowfishKey) {
+        BlowfishKey = blowfishKey;
     }
 }

@@ -3,12 +3,14 @@ package com.example.websocketdemo.model;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import java.util.Date;
@@ -120,14 +122,36 @@ public class Key {
     }
 
     public PublicKey toPublic() {
-        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.decodeBase64(getKey()));
+        String keyContent = new String(getKey());
+        keyContent = keyContent.replace("-----BEGIN RSA PUBLIC KEY-----", "");
+        keyContent = keyContent.replace("-----END RSA PUBLIC KEY-----", "");
+        System.out.println(keyContent);
+        byte[] decoded = Base64.decodeBase64(keyContent);
+        org.bouncycastle.asn1.pkcs.RSAPublicKey pkcs1PublicKey = org.bouncycastle.asn1.pkcs.RSAPublicKey.getInstance(decoded);
+
+        BigInteger modulus = pkcs1PublicKey.getModulus();
+        BigInteger publicExponent = pkcs1PublicKey.getPublicExponent();
+        RSAPublicKeySpec keySpec = new RSAPublicKeySpec(modulus, publicExponent);
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            return keyFactory.generatePublic(keySpec);
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            return kf.generatePublic(keySpec);
         }
         catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             return null;
         }
+
+//
+//        PublicKey generatedPublic = kf.generatePublic(keySpec);
+//        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(Base64.decodeBase64(keyContent));
+//        try {
+//            System.out.println(new String(getKey()));
+//            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+//            return keyFactory.generatePublic(keySpec);
+//        }
+//        catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+//            ex.printStackTrace();
+//            return null;
+//        }
     }
 
     public PrivateKey toPrivate() {

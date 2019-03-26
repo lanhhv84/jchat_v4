@@ -1,5 +1,7 @@
 package com.example.websocketdemo.controller;
 
+import com.example.websocketdemo.constant.ServerAsymmetricKey;
+import com.example.websocketdemo.crypt.Crypto;
 import com.example.websocketdemo.model.ChatMessage;
 import com.example.websocketdemo.model.ChatMessage.MessageType;
 import org.slf4j.Logger;
@@ -23,8 +25,12 @@ public class ChatController {
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
 
+    @Autowired
+    Crypto crypto;
+
     @MessageMapping("/chat/{roomId}/sendMessage")
     public void sendMessage(@DestinationVariable String roomId, @Payload ChatMessage chatMessage) {
+        chatMessage.setContent(new String(crypto.decrypt(chatMessage.getContent().getBytes(), "AES", ServerAsymmetricKey.getAESKey(), null)));
         messagingTemplate.convertAndSend(format("/channel/%s", roomId), chatMessage);
     }
 

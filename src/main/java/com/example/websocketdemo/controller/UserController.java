@@ -63,24 +63,24 @@ public class UserController {
 
         if (userService.login(username, hasher.hash(password))) {
 
-            CryptoUtils cryptoUtils = new CryptoUtils();
-            // Create new key
-            try {
-                cryptoUtils.keyGenerator();
-                KeyPair keyPair = crypto.generateKey();
-                byte[] publicKey = Base64.encodeBase64(keyPair.getPublic().getEncoded());
-                byte[] privateKey = Base64.encodeBase64(keyPair.getPrivate().getEncoded());
-                User user = userService.findOne(username);
-                Key publicKeyModel = new Key(publicKey, true, true, user);
-                publicKeyModel.setCreationTime(Calendar.getInstance().getTime());
-                Key privateKeyModel = new Key(privateKey,true, false, user);
-                privateKeyModel.setCreationTime(Calendar.getInstance().getTime());
-                keyService.add(publicKeyModel);
-                keyService.add(privateKeyModel);
-
-            } catch (CryptoException ex) {
-                ex.printStackTrace();
-            }
+//            CryptoUtils cryptoUtils = new CryptoUtils();
+//            // Create new key
+//            try {
+//                cryptoUtils.keyGenerator();
+//                KeyPair keyPair = crypto.generateKey();
+//                byte[] publicKey = Base64.encodeBase64(keyPair.getPublic().getEncoded());
+//                byte[] privateKey = Base64.encodeBase64(keyPair.getPrivate().getEncoded());
+//                User user = userService.findOne(username);
+//                Key publicKeyModel = new Key(publicKey, true, true, user);
+//                publicKeyModel.setCreationTime(Calendar.getInstance().getTime());
+//                Key privateKeyModel = new Key(privateKey,true, false, user);
+//                privateKeyModel.setCreationTime(Calendar.getInstance().getTime());
+//                keyService.add(publicKeyModel);
+//                keyService.add(privateKeyModel);
+//
+//            } catch (CryptoException ex) {
+//                ex.printStackTrace();
+//            }
             // Finish creating key
 
             return ok(true);

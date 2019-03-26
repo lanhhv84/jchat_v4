@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.Calendar;
 
 @Controller
@@ -41,11 +42,19 @@ public class KeyController {
         return ResponseEntity.ok(new String(user.getLastPublic().toPublic().getEncoded()));
     }
 
+    @RequestMapping("/aes")
+    public ResponseEntity<?> getAES(@RequestParam("username") String username) {
+        User user = userService.findOne(username);
+        PublicKey publicKey = user.getLastPublic().toPublic();
+        byte[] rsaEncryptedKey = (crypto.encrypt(ServerAsymmetricKey.getAESKey(), "RSA", publicKey)).get("value");
+        return ResponseEntity.ok((crypto.encrypt("ABC".getBytes(), "RSA", publicKey)).get("value"));
+    }
+
     @RequestMapping("/register")
     public ResponseEntity<?> register(@RequestParam("key") String key, @RequestParam("username") String username) {
         try {
             User owner = userService.findOne(username);
-            byte[] publicKey = Base64.encodeBase64(key.getBytes("UTF-8"));
+            byte[] publicKey = key.getBytes("UTF-8");
             Key publicKeyModel = new Key(publicKey, true, true, owner);
             publicKeyModel.setCreationTime(Calendar.getInstance().getTime());
             keyService.add(publicKeyModel);
