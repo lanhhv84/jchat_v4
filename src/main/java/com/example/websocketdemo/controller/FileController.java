@@ -54,7 +54,7 @@ public class FileController {
         System.out.println(receiver);
         Map<String, String> res = null;
         try {
-            res = fileStorageService.storeFile(file, option, username);
+            res = fileStorageService.storeFile(file, option, receiver);
         } catch (IOException ex) {
             res = new HashMap<>();
         }
