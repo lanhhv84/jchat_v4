@@ -79,7 +79,7 @@ public class ServerAsymmetricKey {
         if (AESKey == null) {
             ServerAsymmetricKey.generateKey();
         }
-        return Base64.decodeBase64(AESKey);
+        return AESKey;
     }
 
     public static void setAESKey(byte[] AESKey) {

@@ -1,5 +1,6 @@
 package com.example.websocketdemo.controller;
 
+import com.example.websocketdemo.constant.Constant;
 import com.example.websocketdemo.constant.ServerAsymmetricKey;
 import com.example.websocketdemo.crypt.Crypto;
 import com.example.websocketdemo.model.Key;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.Console;
 import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
 import java.security.PublicKey;
@@ -46,8 +48,11 @@ public class KeyController {
     public ResponseEntity<?> getAES(@RequestParam("username") String username) {
         User user = userService.findOne(username);
         PublicKey publicKey = user.getLastPublic().toPublic();
-        byte[] rsaEncryptedKey = (crypto.encrypt(ServerAsymmetricKey.getAESKey(), "RSA", publicKey)).get("value");
-        return ResponseEntity.ok((crypto.encrypt("ABC".getBytes(), "RSA", publicKey)).get("value"));
+        byte[] rsaEncryptedKey = (crypto.encrypt(Base64.encodeBase64(ServerAsymmetricKey.getAESKey()), "RSA", publicKey)).get("value");
+        String aesStringKey = Base64.encodeBase64String(rsaEncryptedKey);
+        System.out.println("AES Encrypted key");
+        System.out.println(aesStringKey);
+        return ResponseEntity.ok(aesStringKey);
     }
 
     @RequestMapping("/register")

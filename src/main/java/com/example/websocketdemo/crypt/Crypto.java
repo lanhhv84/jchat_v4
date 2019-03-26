@@ -40,27 +40,28 @@ public class Crypto {
                     IvParameterSpec iv = new IvParameterSpec(initVector);
                     values.put("key", secretKey.getEncoded());
                     System.out.println("Decrypting with AES with key: " + new String(secretKey.getEncoded()));
-                    cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+                    cipher = Cipher.getInstance("AES/CBC/PKCS7PADDING");
                     cipher.init(Cipher.ENCRYPT_MODE, secretKey);
                     encrypted = cipher.doFinal(plainData);
                     break;
                 case "RSA":
-                    cipher = Cipher.getInstance("RSA");
-                    cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-                    ByteArrayInputStream bis = new ByteArrayInputStream(plainData);
-                    File tempFile = new File("./uploads/tempFile");
-                    FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
-                    byte[] blockData = new byte[Crypto.blockSize];
-                    System.out.print("Block length: ");
-                    System.out.println(blockData.length);
-                    int len = 0;
-                    byte[] encryptedBlock = null;
-                    while ((len = bis.read(blockData)) != -1) {
-                        if (len < Crypto.blockSize) Arrays.fill(blockData, len, Crypto.blockSize, (byte) 0);
-                        encryptedBlock = cipher.doFinal(blockData);
-                        tempOutputStream.write(encryptedBlock);
-                    }
-                    encrypted = Files.readAllBytes(tempFile.toPath());
+//                    cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+//                    cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+//                    ByteArrayInputStream bis = new ByteArrayInputStream(plainData);
+//                    File tempFile = new File("./uploads/tempFile");
+//                    FileOutputStream tempOutputStream = new FileOutputStream(tempFile);
+//                    byte[] blockData = new byte[Crypto.blockSize];
+//                    int len = 0;
+//                    byte[] encryptedBlock = null;
+//                    while ((len = bis.read(blockData)) != -1) {
+//                        if (len < Crypto.blockSize) Arrays.fill(blockData, len, Crypto.blockSize, (byte) 0);
+//                        encryptedBlock = cipher.doFinal(blockData);
+//                        tempOutputStream.write(encryptedBlock);
+//                    }
+//                    encrypted = Files.readAllBytes(tempFile.toPath());
+                      cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+                      cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+                      encrypted = cipher.doFinal(plainData);
 
                     break;
                 case "Blowfish":
@@ -76,7 +77,7 @@ public class Crypto {
         }
         try {
 
-            values.put("value", Base64.encodeBase64(encrypted));
+            values.put("value", encrypted);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -92,7 +93,7 @@ public class Crypto {
         try {
             switch (algorithm) {
                 case "RSA":
-                    cipher = Cipher.getInstance("RSA");
+                    cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
                     cipher.init(Cipher.DECRYPT_MODE, privateKey);
                     ByteArrayInputStream bis = new ByteArrayInputStream(encrypted);
                     File tempFile = new File("./uploads/tempFile");

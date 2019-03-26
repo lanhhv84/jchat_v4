@@ -4,6 +4,7 @@ import com.example.websocketdemo.constant.ServerAsymmetricKey;
 import com.example.websocketdemo.crypt.Crypto;
 import com.example.websocketdemo.model.ChatMessage;
 import com.example.websocketdemo.model.ChatMessage.MessageType;
+import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,8 @@ public class ChatController {
 
     @MessageMapping("/chat/{roomId}/sendMessage")
     public void sendMessage(@DestinationVariable String roomId, @Payload ChatMessage chatMessage) {
-        chatMessage.setContent(new String(crypto.decrypt(chatMessage.getContent().getBytes(), "AES", ServerAsymmetricKey.getAESKey(), null)));
+        System.out.println(chatMessage.getContent());
+        chatMessage.setContent(new String(crypto.decrypt(chatMessage.getContent().getBytes(), "AES", org.apache.commons.codec.binary.Base64.encodeBase64(ServerAsymmetricKey.getAESKey()), null)));
         messagingTemplate.convertAndSend(format("/channel/%s", roomId), chatMessage);
     }
 
