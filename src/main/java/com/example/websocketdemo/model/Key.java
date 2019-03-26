@@ -126,6 +126,7 @@ public class Key {
             return keyFactory.generatePublic(keySpec);
         }
         catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            ex.printStackTrace();
             return null;
         }
     }

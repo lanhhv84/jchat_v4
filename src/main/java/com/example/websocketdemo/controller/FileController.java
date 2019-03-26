@@ -54,7 +54,11 @@ public class FileController {
         System.out.println(receiver);
         Map<String, String> res = null;
         try {
-            res = fileStorageService.storeFile(file, option, receiver);
+            if (option.equals("RSA"))
+                res = fileStorageService.storeFile(file, option, receiver);
+            else {
+                res = fileStorageService.storeFile(file, option, username);
+            }
         } catch (IOException ex) {
             res = new HashMap<>();
         }
