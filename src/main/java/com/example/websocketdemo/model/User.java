@@ -29,7 +29,7 @@ public class User {
     @Column(name = "u_username", unique = true, length = 32)
     private String username;
 
-    @Column(name = "u_password", unique = true, length = 127)
+    @Column(name = "u_password", length = 127)
     private String password;
 
     @ManyToMany(mappedBy = "users")

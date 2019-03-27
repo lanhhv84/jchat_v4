@@ -6,6 +6,7 @@ import com.example.websocketdemo.model.User;
 import com.example.websocketdemo.payload.UploadFileResponse;
 import com.example.websocketdemo.service.FileInfoService;
 import com.example.websocketdemo.service.FileStorageService;
+import com.example.websocketdemo.service.UserService;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.slf4j.Logger;
@@ -41,6 +42,9 @@ public class FileController {
 
     @Autowired
     private Crypto crypto;
+
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/uploadFile")
     public Map<String, String> uploadFile(@RequestParam("file") MultipartFile file,
@@ -79,7 +83,7 @@ public class FileController {
     }
 
     @GetMapping("/downloadFile/{fileName:.+}")
-    public void downloadFile(@PathVariable String fileName,
+    public void downloadFile(@PathVariable String fileName, @RequestParam("username") String username,
                              HttpServletRequest request, HttpServletResponse response) {
 
         Resource resource = fileStorageService.loadFileAsResource(fileName);
@@ -91,7 +95,7 @@ public class FileController {
             FileInfo fileInfo = fileInfoService.findFirstByNewName(encryptedFile.getName());
             byte[] key = fileInfo.getKey();
             byte[] plainData = null;
-            User owner = fileInfo.getOwner();
+            User owner = userService.findOne(username);
             if (owner.getLastPrivate().toPrivate() == null) {
                 System.out.println("Key is null");
                 System.out.println(Hex.encodeHexString(owner.getLastPrivate().getKey()));

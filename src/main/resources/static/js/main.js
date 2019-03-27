@@ -119,7 +119,15 @@ function onMessageReceived(payload) {
 
     var textElement = document.createElement('p');
 //  var messageText = document.createTextNode(message.content);
-    textElement.innerHTML = message.content;
+    var reg = new RegExp("'http://localhost:8080/downloadFile/[^']*");
+    if (message.content.includes("<a href")) {
+
+        var x = reg.exec(message.content)[0];
+        message.content = message.content.replace(x, x + '?username=' + sessionStorage.getItem("username"));
+        console.log(message.content);
+    }
+        textElement.innerHTML = message.content;
+
 //  textElement.appendChild(messageText);
 
     messageElement.appendChild(textElement);

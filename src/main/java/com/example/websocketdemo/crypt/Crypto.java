@@ -45,6 +45,7 @@ public class Crypto {
                     encrypted = cipher.doFinal(plainData);
                     break;
                 case "RSA":
+                    System.out.println("Encrypting with RSA " + Base64.encodeBase64String(publicKey.getEncoded()));
                     cipher = Cipher.getInstance("RSA");
                     cipher.init(Cipher.ENCRYPT_MODE, publicKey);
                     ByteArrayInputStream bis = new ByteArrayInputStream(plainData);
@@ -92,6 +93,7 @@ public class Crypto {
         try {
             switch (algorithm) {
                 case "RSA":
+                    System.out.println("Decrypting with RSA: " + Base64.encodeBase64String(privateKey.getEncoded()));
                     cipher = Cipher.getInstance("RSA");
                     cipher.init(Cipher.DECRYPT_MODE, privateKey);
                     ByteArrayInputStream bis = new ByteArrayInputStream(encrypted);
